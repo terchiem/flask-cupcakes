@@ -1,6 +1,6 @@
 """Flask app for Cupcakes"""
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from models import db, connect_db, Cupcake
 
 app = Flask(__name__)
@@ -66,3 +66,39 @@ def create_cupcake():
     serialized = serialize_cupcake(new_cupcake)
 
     return ( jsonify(cupcake=serialized), 201 )
+
+@app.route('/api/cupcakes/<int:cupcake_id>', methods = ['PATCH'])
+def update_cupcake(cupcake_id):
+    """ Update the cupcake"""
+
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
+
+    cupcake.flavor = request.json['flavor']
+    cupcake.size = request.json['size']
+    cupcake.rating = float(request.json['rating'])
+    cupcake.image = request.json['image']
+    # check for key error
+
+    db.session.commit()
+
+    serialized = serialize_cupcake(cupcake)
+
+    return (jsonify(cupcake=serialized), 200)
+
+
+@app.route('/api/cupcakes/<int:cupcake_id>', methods = ['DELETE'])
+def delete_cupcake(cupcake_id):
+    """ Delete the cupcake"""
+
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
+
+    db.session.delete(cupcake)
+    db.session.commit()
+
+    return (jsonify( { "message": "Deleted"}), 200)
+
+@app.route('/')
+def cupcake_form():
+    """ Return static html for cupcake entry """
+
+    return render_template('cupcake_form.html')
