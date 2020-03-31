@@ -144,3 +144,24 @@ class CupcakeViewsTestCase(TestCase):
                 "message" : "Deleted"
                 }
             )
+
+    def test_get_cupcake_not_found(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/99999"
+            resp = client.get(url)
+
+            self.assertEqual(resp.status_code, 404)
+
+    def test_patch_cupcake_not_found(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/99999"
+            resp = client.patch(url)
+
+            self.assertEqual(resp.status_code, 404)
+
+    def test_delete_cupcake_not_found(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/99999"
+            resp = client.delete(url)
+
+            self.assertEqual(resp.status_code, 404)

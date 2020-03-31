@@ -2,17 +2,17 @@
 {% block title %}Cupcakes! {% endblock %}
 {% block content%}
 <div>
-  <ul>
+  <ul id="cupcake-list">
 
   </ul>
 </div>
 
 
 <form>
-  <label>Flavor: <input name="flavor"></label><br>
-  <label>Size: <input name="size" ></label><br>
-  <label>Rating: <input name="rating" ></label><br>
-  <label>Image: <input name="image" ></label>
+  <label>Flavor: <input id="flavor" name="flavor"></label><br>
+  <label>Size: <input id="size" name="size" ></label><br>
+  <label>Rating: <input id="rating" name="rating" ></label><br>
+  <label>Image: <input id="image" name="image" ></label>
   <button id="submit_btn">Submit</button>
 </form>
 {% endblock %}

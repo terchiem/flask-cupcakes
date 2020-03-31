@@ -12,6 +12,9 @@ app.config['SQLALCHEMY_ECHO'] = True
 connect_db(app)
 db.create_all()
 
+
+# TODO: status code constants
+
 def serialize_cupcake(cupcake):
     """ Serialize class into a dictionary """
 
@@ -41,7 +44,7 @@ def get_cupcake(cupcake_id):
 
     cupcake = Cupcake.query.get_or_404(cupcake_id)
 
-    # check the cupcake, handle if 404
+    # TODO: check the cupcake, handle if 404
 
     serialized = serialize_cupcake(cupcake)
 
@@ -55,8 +58,8 @@ def create_cupcake():
     flavor = request.json['flavor']
     size = request.json['size']
     rating = float(request.json['rating'])
-    image = request.json['image']
-    # check for key error
+    image = request.json['image'] or None
+    # TODO: check for key error
 
     new_cupcake = Cupcake(flavor=flavor, size=size, rating=rating, image=image)
 
@@ -67,7 +70,7 @@ def create_cupcake():
 
     return ( jsonify(cupcake=serialized), 201 )
 
-@app.route('/api/cupcakes/<int:cupcake_id>', methods = ['PATCH'])
+@app.route('/api/cupcakes/<int:cupcake_id>', methods=['PATCH'])
 def update_cupcake(cupcake_id):
     """ Update the cupcake"""
 
@@ -76,8 +79,8 @@ def update_cupcake(cupcake_id):
     cupcake.flavor = request.json['flavor']
     cupcake.size = request.json['size']
     cupcake.rating = float(request.json['rating'])
-    cupcake.image = request.json['image']
-    # check for key error
+    cupcake.image = request.json['image'] or None
+    # TODO: check for key error
 
     db.session.commit()
 
@@ -86,7 +89,7 @@ def update_cupcake(cupcake_id):
     return (jsonify(cupcake=serialized), 200)
 
 
-@app.route('/api/cupcakes/<int:cupcake_id>', methods = ['DELETE'])
+@app.route('/api/cupcakes/<int:cupcake_id>', methods=['DELETE'])
 def delete_cupcake(cupcake_id):
     """ Delete the cupcake"""
 
@@ -97,8 +100,33 @@ def delete_cupcake(cupcake_id):
 
     return (jsonify( { "message": "Deleted"}), 200)
 
+
+@app.route('/api/search')
+def search_cupcakes():
+    """ Search for a cupcake """
+
+    search_flavor = request.args['flavor']
+
+    # query db with data
+    cupcakes = Cupcake.query.filter(Cupcake.flavor == search_flavor).all()
+
+    # return json of results
+    serialized = [ serialize_cupcake(c) for c in cupcakes ]
+
+    return ( jsonify(cupcakes=serialized), 200 )
+
+
+###############
+# Form routes
+
 @app.route('/')
 def cupcake_form():
     """ Return static html for cupcake entry """
 
     return render_template('cupcake_form.html')
+
+@app.route('/search')
+def cupcake_search_form():
+    """ Return static html for cupcake search """
+
+    return render_template('cupcake_search.html')
